@@ -1,0 +1,144 @@
+body {
+  background: linear-gradient(90deg, #ffde6b 0%, #f3f8f0 100%);
+  font-family: Arial, sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  text-align: center;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 40px;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+.dropdown-container {
+  position: relative;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.dropdown-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.dropdown-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  position: absolute;
+  z-index: 1000;
+  width: 100%;
+}
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+.offers-section {
+  padding: 20px;
+}
+
+.offer-group {
+  margin-bottom: 40px;
+}
+
+.offer-group h2 {
+  font-size: 30px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.offer-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.offer-card {
+  background-color: #d2e4c7;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: calc(33.33% - 20px);
+  width: 300px;
+}
+
+.offer-card img {
+  width: 200px;
+  border-radius: 5px;
+  height: 150px;
+  object-fit: cover;
+  margin-top: 5px;
+}
+
+.offer-info {
+  padding: 10px;
+}
+
+.offer-info h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.offer-info p {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .offer-card {
+    width: 100%;
+  }
+
+  .offer-group h2 {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .offer-card {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .dropdown-input{
+    width: 300px;
+  }
+}
