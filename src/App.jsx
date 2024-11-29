@@ -79,8 +79,8 @@ const HotelOffers = () => {
   const selectedIxigoOffers = getOffersForSelectedCard(ixigoOffers);
 
   return (
-    <div className="App">
-      <h1>Hotel Offers</h1>
+    <div className="App" style={{ fontFamily: "'Libre Baskerville', serif" }}>
+      <h1>Hotel Offers - Linked to Your Credit Card</h1>
       <div className="dropdown-container">
         <input
           type="text"
