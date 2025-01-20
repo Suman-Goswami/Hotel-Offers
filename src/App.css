@@ -6,6 +6,14 @@ body {
   padding: 0;
 }
 
+.no-offers-message {
+  color: red;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+
 .App {
   text-align: center;
   padding: 20px;
@@ -140,5 +148,148 @@ button:hover {
   
   .dropdown-input{
     width: 300px;
+  }
+}
+
+/* General Navbar Styling */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #d6d9c6;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 100px;
+  height: auto;
+}
+
+.menu-button {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: none; /* Hidden on desktop */
+}
+
+.links-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.link {
+  text-decoration: none;
+  color: black;
+  font-size: 14px;
+  padding: 5px 10px;
+}
+
+.login {
+  color: gray;
+  display: flex;
+  align-items: center;
+}
+
+.login i {
+  margin-right: 5px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .menu-button {
+    display: block;
+  }
+
+  .links-container {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .links-container.show {
+    display: flex;
+  }
+
+  .logo-container {
+    flex-grow: 1;
+    justify-content: center;
+  }
+}
+
+
+/* Base Navbar Styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #CDD1C1;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+}
+
+.linksContainer {
+  display: flex;
+  gap: 35px;
+  flex-wrap: wrap;
+}
+
+.link {
+  text-decoration: none;
+  color: black;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  transition: color 0.3s ease;
+}
+
+/* Hamburger Icon - Initially hidden */
+.hamburger {
+  font-size: 24px;
+  cursor: pointer;
+  display: none;
+}
+
+/* Media Query for Mobile Devices */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .linksContainer {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .linksContainer.open {
+    display: flex;
+  }
+
+  .hamburger {
+    display: block;
   }
 }
