@@ -70,12 +70,17 @@ const App = () => {
     setQuery(value);
 
     if (value) {
-      const filteredCredit = creditCards.filter((card) =>
-        card.toLowerCase().startsWith(value.toLowerCase())
-      );
-      const filteredDebit = debitCards.filter((card) =>
-        card.toLowerCase().startsWith(value.toLowerCase())
-      );
+      const searchTerms = value.toLowerCase().split(/\s+/).filter(Boolean);
+      
+      const filteredCredit = creditCards.filter((card) => {
+        const lowerCard = card.toLowerCase();
+        return searchTerms.every(term => lowerCard.includes(term));
+      });
+
+      const filteredDebit = debitCards.filter((card) => {
+        const lowerCard = card.toLowerCase();
+        return searchTerms.every(term => lowerCard.includes(term));
+      });
 
       // Combine filtered credit and debit cards with headings
       const combinedResults = [];
@@ -130,7 +135,6 @@ const App = () => {
   const selectedYatraOffers = getOffersForSelectedCard(yatraOffers);
   const selectedClearOffers = getOffersForSelectedCard(clearOffers);
   const selectedIxigoOffers = getOffersForSelectedCard(ixigoOffers);
-
   const selectedDebitHotelOffers = getOffersForSelectedCard(hotelOffers, true);
 
   return (
@@ -309,14 +313,14 @@ const styles = {
     display: "flex",
     gap: "35px",
     flexWrap: "wrap",
-    marginLeft: "40px", // Adjust spacing from the logo
+    marginLeft: "40px",
   },
   link: {
     textDecoration: "none",
     color: "black",
-    fontSize: "18px", // Increased font size
+    fontSize: "18px",
     fontFamily: "Arial, sans-serif",
-    transition: "color 0.3s ease", // Smooth transition effect
+    transition: "color 0.3s ease",
   },
   mobileMenuOpen: {
     display: "block",
