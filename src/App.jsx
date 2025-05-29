@@ -14,6 +14,7 @@ const App = () => {
   const [clearOffers, setClearOffers] = useState([]);
   const [ixigoOffers, setIxigoOffers] = useState([]);
   const [hotelOffers, setHotelOffers] = useState([]);
+  const [updatedCreditCards, setUpdatedCreditCards] = useState([]);
   const [noOffers, setNoOffers] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -26,6 +27,7 @@ const App = () => {
           { name: "CLEAR HOTEL.csv", setter: setClearOffers },
           { name: "IXIGO HOTEL.csv", setter: setIxigoOffers },
           { name: "Hotel-offers.csv", setter: setHotelOffers },
+          { name: "Updated_Credit_Cards_with_Image_Links.csv", setter: setUpdatedCreditCards },
         ];
 
         let allCreditCards = new Set();
@@ -33,7 +35,6 @@ const App = () => {
 
         for (let file of files) {
           const response = await axios.get(file.name);
-
           const parsedData = Papa.parse(response.data, { header: true });
 
           if (file.name === "Hotel-offers.csv") {
@@ -44,15 +45,23 @@ const App = () => {
                 });
               }
             });
-          } else {
+          } 
+          else if (file.name === "Updated_Credit_Cards_with_Image_Links.csv") {
+            parsedData.data.forEach((row) => {
+              if (row["Credit Card Name"]) {
+                allCreditCards.add(row["Credit Card Name"].trim());
+              }
+            });
+            file.setter(parsedData.data);
+          }
+          else {
             parsedData.data.forEach((row) => {
               if (row["Credit Card"]) {
                 allCreditCards.add(row["Credit Card"].trim());
               }
             });
+            file.setter(parsedData.data);
           }
-
-          file.setter(parsedData.data);
         }
 
         setCreditCards(Array.from(allCreditCards).sort());
@@ -82,7 +91,6 @@ const App = () => {
         return searchTerms.every(term => lowerCard.includes(term));
       });
 
-      // Combine filtered credit and debit cards with headings
       const combinedResults = [];
       if (filteredCredit.length > 0) {
         combinedResults.push({ type: "heading", label: "Credit Cards" });
@@ -127,6 +135,12 @@ const App = () => {
     });
   };
 
+  const getUpdatedCardOffers = () => {
+    return updatedCreditCards.filter(
+      (card) => card["Credit Card Name"] && card["Credit Card Name"].trim() === selectedCard
+    );
+  };
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen((prev) => !prev);
   };
@@ -136,10 +150,10 @@ const App = () => {
   const selectedClearOffers = getOffersForSelectedCard(clearOffers);
   const selectedIxigoOffers = getOffersForSelectedCard(ixigoOffers);
   const selectedDebitHotelOffers = getOffersForSelectedCard(hotelOffers, true);
+  const selectedUpdatedCardOffers = getUpdatedCardOffers();
 
   return (
     <div className="App" style={{ fontFamily: "'Libre Baskerville', serif" }}>
-      {/* Navbar Component */}
       <nav style={styles.navbar}>
         <div style={styles.logoContainer}>
           <a href="https://www.myrupaya.in/">
@@ -149,7 +163,6 @@ const App = () => {
               style={styles.logo}
             />
           </a>
-          {/* Move the links here */}
           <div
             style={{
               ...styles.linksContainer,
@@ -201,6 +214,29 @@ const App = () => {
 
       {selectedCard && !noOffers && (
         <div className="offers-section">
+          {selectedUpdatedCardOffers.length > 0 && (
+            <div className="offer-group">
+              <h2>Some permanent offers on the selected credit card</h2>
+              <div className="offer-grid">
+                {selectedUpdatedCardOffers.map((offer, index) => (
+                  <div key={index} className="offer-card">
+                    {offer["Credit Card Image"] && (
+                      <img 
+                        src={offer["Credit Card Image"]} 
+                        alt={offer["Credit Card Name"]} 
+                        className="card-image"
+                      />
+                    )}
+                    <div className="offer-info">
+                      <h3>{offer["Credit Card Name"]}</h3>
+                      <p>{offer["Hotel Benefit"]}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {selectedEaseOffers.length > 0 && (
             <div className="offer-group">
               <h2>EaseMyTrip Offers</h2>
@@ -218,6 +254,7 @@ const App = () => {
               </div>
             </div>
           )}
+
           {selectedYatraOffers.length > 0 && (
             <div className="offer-group">
               <h2>Yatra Offers</h2>
@@ -235,6 +272,7 @@ const App = () => {
               </div>
             </div>
           )}
+
           {selectedClearOffers.length > 0 && (
             <div className="offer-group">
               <h2>ClearTrip Offers</h2>
@@ -252,6 +290,7 @@ const App = () => {
               </div>
             </div>
           )}
+
           {selectedIxigoOffers.length > 0 && (
             <div className="offer-group">
               <h2>Ixigo Offers</h2>
@@ -269,6 +308,7 @@ const App = () => {
               </div>
             </div>
           )}
+
           {selectedDebitHotelOffers.length > 0 && (
             <div className="offer-group">
               <h2>Hotel Debit Card Offers</h2>
