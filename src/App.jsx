@@ -40,11 +40,19 @@ const App = () => {
           if (file.name === "Hotel-offers.csv") {
             parsedData.data.forEach((row) => {
               if (row["Applicable Debit Cards"]) {
-                row["Applicable Debit Cards"].split(",").forEach((card) => {
-                  allDebitCards.add(card.trim());
+                // Clean up the card names by removing extra whitespace and newlines
+                const cards = row["Applicable Debit Cards"]
+                  .replace(/\n/g, '')  // Remove newlines
+                  .split(',')
+                  .map(card => card.trim())
+                  .filter(card => card.length > 0);
+                
+                cards.forEach((card) => {
+                  allDebitCards.add(card);
                 });
               }
             });
+            file.setter(parsedData.data);
           } 
           else if (file.name === "Updated_Credit_Cards_with_Image_Links.csv") {
             parsedData.data.forEach((row) => {
@@ -127,17 +135,26 @@ const App = () => {
       if (isDebit) {
         return (
           offer["Applicable Debit Cards"] &&
-          offer["Applicable Debit Cards"].split(",").map((c) => c.trim()).includes(selectedCard)
+          offer["Applicable Debit Cards"]
+            .replace(/\n/g, '')  // Remove newlines
+            .split(',')
+            .map((c) => c.trim())
+            .some(card => 
+              card.toLowerCase().includes(selectedCard.toLowerCase()) ||
+              selectedCard.toLowerCase().includes(card.toLowerCase())
+            )
         );
       } else {
-        return offer["Credit Card"] && offer["Credit Card"].trim() === selectedCard;
+        return offer["Credit Card"] && 
+               offer["Credit Card"].trim().toLowerCase() === selectedCard.toLowerCase();
       }
     });
   };
 
   const getUpdatedCardOffers = () => {
     return updatedCreditCards.filter(
-      (card) => card["Credit Card Name"] && card["Credit Card Name"].trim() === selectedCard
+      (card) => card["Credit Card Name"] && 
+                card["Credit Card Name"].trim().toLowerCase() === selectedCard.toLowerCase()
     );
   };
 
