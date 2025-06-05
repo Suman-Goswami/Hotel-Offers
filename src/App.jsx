@@ -13,20 +13,23 @@ const App = () => {
   const [yatraOffers, setYatraOffers] = useState([]);
   const [clearOffers, setClearOffers] = useState([]);
   const [ixigoOffers, setIxigoOffers] = useState([]);
-  const [hotelOffers, setHotelOffers] = useState([]);
+  const [mmtOffers, setMmtOffers] = useState([]);
+  const [debitCardOffers, setDebitCardOffers] = useState([]);
   const [updatedCreditCards, setUpdatedCreditCards] = useState([]);
   const [noOffers, setNoOffers] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDebitCardSelected, setIsDebitCardSelected] = useState(false);
 
   useEffect(() => {
     const fetchCSVData = async () => {
       try {
         const files = [
-          { name: "EASE HOTEL.csv", setter: setEaseOffers },
-          { name: "YATRA HOTEL.csv", setter: setYatraOffers },
-          { name: "CLEAR HOTEL.csv", setter: setClearOffers },
-          { name: "IXIGO HOTEL.csv", setter: setIxigoOffers },
-          { name: "Hotel-offers.csv", setter: setHotelOffers },
+          { name: "EaseMyTrip.csv", setter: setEaseOffers },
+          { name: "Yatra.csv", setter: setYatraOffers },
+          { name: "ClearTrip.csv", setter: setClearOffers },
+          { name: "Ixigo.csv", setter: setIxigoOffers },
+          { name: "MakeMyTrip.csv", setter: setMmtOffers },
+          { name: "Debit Card.csv", setter: setDebitCardOffers },
           { name: "Updated_Credit_Cards_with_Image_Links.csv", setter: setUpdatedCreditCards },
         ];
 
@@ -37,12 +40,11 @@ const App = () => {
           const response = await axios.get(file.name);
           const parsedData = Papa.parse(response.data, { header: true });
 
-          if (file.name === "Hotel-offers.csv") {
+          if (file.name === "Debit Card.csv") {
             parsedData.data.forEach((row) => {
-              if (row["Applicable Debit Cards"]) {
-                // Clean up the card names by removing extra whitespace and newlines
-                const cards = row["Applicable Debit Cards"]
-                  .replace(/\n/g, '')  // Remove newlines
+              if (row["Debit Cards"]) {
+                const cards = row["Debit Cards"]
+                  .replace(/\n/g, '')
                   .split(',')
                   .map(card => card.trim())
                   .filter(card => card.length > 0);
@@ -52,7 +54,6 @@ const App = () => {
                 });
               }
             });
-            file.setter(parsedData.data);
           } 
           else if (file.name === "Updated_Credit_Cards_with_Image_Links.csv") {
             parsedData.data.forEach((row) => {
@@ -60,7 +61,6 @@ const App = () => {
                 allCreditCards.add(row["Credit Card Name"].trim());
               }
             });
-            file.setter(parsedData.data);
           }
           else {
             parsedData.data.forEach((row) => {
@@ -68,8 +68,8 @@ const App = () => {
                 allCreditCards.add(row["Credit Card"].trim());
               }
             });
-            file.setter(parsedData.data);
           }
+          file.setter(parsedData.data);
         }
 
         setCreditCards(Array.from(allCreditCards).sort());
@@ -120,23 +120,25 @@ const App = () => {
       setFilteredCards([]);
       setNoOffers(false);
       setSelectedCard("");
+      setIsDebitCardSelected(false);
     }
   };
 
-  const handleCardSelection = (card) => {
+  const handleCardSelection = (card, type) => {
     setSelectedCard(card);
     setQuery(card);
     setFilteredCards([]);
     setNoOffers(false);
+    setIsDebitCardSelected(type === "debit");
   };
 
   const getOffersForSelectedCard = (offers, isDebit = false) => {
     return offers.filter((offer) => {
       if (isDebit) {
         return (
-          offer["Applicable Debit Cards"] &&
-          offer["Applicable Debit Cards"]
-            .replace(/\n/g, '')  // Remove newlines
+          offer["Debit Cards"] &&
+          offer["Debit Cards"]
+            .replace(/\n/g, '')
             .split(',')
             .map((c) => c.trim())
             .some(card => 
@@ -162,11 +164,52 @@ const App = () => {
     setIsMobileMenuOpen((prev) => !prev);
   };
 
+  const renderTravelOffers = (offers, platformName) => {
+    return (
+      <div className="offer-group">
+        <h2>{platformName} Offers</h2>
+        <div className="offer-grid">
+          {offers.map((offer, index) => (
+            <div key={index} className="offer-card">
+              {offer["Offer Image"] && (
+                <img 
+                  src={offer["Offer Image"]} 
+                  alt={offer["Offer Title"] || platformName + " Offer"} 
+                  className="offer-image"
+                />
+              )}
+              <div className="offer-info">
+                <h3>{offer["Offer Title"] || "Hotel Offer"}</h3>
+           {offer["Expiry Date"] ? (
+  <p><strong>Valid until:</strong> {offer["Expiry Date"]}</p>
+) : (
+  <p><em>For more details, check the website.</em></p>
+)}
+
+
+                <p className="offer-description">{offer["Offer"]}</p>
+                {offer["Offer Link"] && (
+                  <button 
+                    onClick={() => window.open(offer["Offer Link"], "_blank")}
+                    className="offer-button"
+                  >
+                    View Details
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   const selectedEaseOffers = getOffersForSelectedCard(easeOffers);
   const selectedYatraOffers = getOffersForSelectedCard(yatraOffers);
   const selectedClearOffers = getOffersForSelectedCard(clearOffers);
   const selectedIxigoOffers = getOffersForSelectedCard(ixigoOffers);
-  const selectedDebitHotelOffers = getOffersForSelectedCard(hotelOffers, true);
+  const selectedMmtOffers = getOffersForSelectedCard(mmtOffers);
+  const selectedDebitOffers = getOffersForSelectedCard(debitCardOffers, true);
   const selectedUpdatedCardOffers = getUpdatedCardOffers();
 
   return (
@@ -193,7 +236,7 @@ const App = () => {
         </div>
       </nav>
 
-      <h1>Hotel Offers</h1>
+     <div class="heading"> <h1>Hotel Offers</h1> </div>
       <div className="dropdown-container">
         <input
           type="text"
@@ -212,7 +255,7 @@ const App = () => {
               ) : (
                 <li
                   key={index}
-                  onClick={() => handleCardSelection(item.card)}
+                  onClick={() => handleCardSelection(item.card, item.type)}
                   className="dropdown-item"
                 >
                   {item.card}
@@ -231,7 +274,7 @@ const App = () => {
 
       {selectedCard && !noOffers && (
         <div className="offers-section">
-          {selectedUpdatedCardOffers.length > 0 && (
+          {!isDebitCardSelected && selectedUpdatedCardOffers.length > 0 && (
             <div className="offer-group">
               <h2>Some permanent offers on the selected credit card</h2>
               <div className="offer-grid">
@@ -254,89 +297,37 @@ const App = () => {
             </div>
           )}
 
-          {selectedEaseOffers.length > 0 && (
-            <div className="offer-group">
-              <h2>EaseMyTrip Offers</h2>
-              <div className="offer-grid">
-                {selectedEaseOffers.map((offer, index) => (
-                  <div key={index} className="offer-card">
-                    <img src={offer.Image} alt={offer.Title} />
-                    <div className="offer-info">
-                      <h3>{offer.Title}</h3>
-                      <p>{offer.Offer}</p>
-                      <button onClick={() => window.open(offer.Link, "_blank")}>View Details</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Render all travel offers using the new consistent format */}
+          {!isDebitCardSelected && selectedEaseOffers.length > 0 && 
+            renderTravelOffers(selectedEaseOffers, "EaseMyTrip")}
 
-          {selectedYatraOffers.length > 0 && (
-            <div className="offer-group">
-              <h2>Yatra Offers</h2>
-              <div className="offer-grid">
-                {selectedYatraOffers.map((offer, index) => (
-                  <div key={index} className="offer-card">
-                    <img src={offer.Image} alt={offer.Title} />
-                    <div className="offer-info">
-                      <h3>{offer.Title}</h3>
-                      <p>{offer.Offer}</p>
-                      <button onClick={() => window.open(offer.Link, "_blank")}>View Details</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {!isDebitCardSelected && selectedYatraOffers.length > 0 && 
+            renderTravelOffers(selectedYatraOffers, "Yatra")}
 
-          {selectedClearOffers.length > 0 && (
-            <div className="offer-group">
-              <h2>ClearTrip Offers</h2>
-              <div className="offer-grid">
-                {selectedClearOffers.map((offer, index) => (
-                  <div key={index} className="offer-card">
-                    <img src={offer.Image} alt={offer.Title} />
-                    <div className="offer-info">
-                      <h3>{offer.Title}</h3>
-                      <p>{offer.Offer}</p>
-                      <button onClick={() => window.open(offer.Link, "_blank")}>View Details</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {!isDebitCardSelected && selectedClearOffers.length > 0 && 
+            renderTravelOffers(selectedClearOffers, "ClearTrip")}
 
-          {selectedIxigoOffers.length > 0 && (
-            <div className="offer-group">
-              <h2>Ixigo Offers</h2>
-              <div className="offer-grid">
-                {selectedIxigoOffers.map((offer, index) => (
-                  <div key={index} className="offer-card">
-                    <img src={offer.Image} alt={offer.Title} />
-                    <div className="offer-info">
-                      <h3>{offer.Title}</h3>
-                      <p>{offer.Offer}</p>
-                      <button onClick={() => window.open(offer.Link, "_blank")}>View Details</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {!isDebitCardSelected && selectedIxigoOffers.length > 0 && 
+            renderTravelOffers(selectedIxigoOffers, "Ixigo")}
 
-          {selectedDebitHotelOffers.length > 0 && (
+          {!isDebitCardSelected && selectedMmtOffers.length > 0 && 
+            renderTravelOffers(selectedMmtOffers, "MakeMyTrip")}
+
+          {isDebitCardSelected && selectedDebitOffers.length > 0 && (
             <div className="offer-group">
               <h2>Hotel Debit Card Offers</h2>
               <div className="offer-grid">
-                {selectedDebitHotelOffers.map((offer, index) => (
+                {selectedDebitOffers.map((offer, index) => (
                   <div key={index} className="offer-card">
-                    <img src={offer.Image} alt={offer.Website} />
+                    {offer.Image && (
+                      <img src={offer.Image} alt={offer.Website} />
+                    )}
                     <div className="offer-info">
                       <h3>{offer.Website}</h3>
                       <p>{offer.Offer}</p>
-                      <button onClick={() => window.open(offer.Link, "_blank")}>View Details</button>
+                      <button onClick={() => window.open(offer.Link, "_blank")}>
+                        View Details
+                      </button>
                     </div>
                   </div>
                 ))}
